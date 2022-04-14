@@ -1,6 +1,6 @@
 # terraform-github-actions-oidc
 
-This repo is a companion to our blog on setting up a Terraform pipeline with GitHub Actions and GitHub OIDC for AWS.
+This repo is a companion to our blog post: [Set Up a Terraform Pipeline with GitHub Actions and GitHub OIDC for AWS](https://blog.symops.com/2022/04/14/terraform-pipeline-with-github-actions-and-github-oidc-for-aws/).
 
 ## Repo layout
 
