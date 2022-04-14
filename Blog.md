@@ -22,7 +22,7 @@ Using GitHub OIDC means you'll have to do some permissions configuration in your
 
 Getting your OIDC stuff set up is pretty simple, but rather than starting from scratch there's a nice starter module by [@unfunco](https://github.com/unfunco/terraform-aws-oidc-github) that we're going to use. The module lets you configure the name of the GitHub org and the list of GitHub repositories that your AWS Role should trust.
 
-Note that you can actually lock down the trust relationship to more fine grained conditions than the `terraform-aws-oidc-github` module currently exposes. You can filter for specific environments, for Pull Requests only, for specific branches, or specific tags (full details [here](https://docs.github.com/en/enterprise-cloud@latest/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#example-subject-claims). We're going to contribute an example with all the knobs and levers soon!
+Note that you can actually lock down the trust relationship to more fine grained conditions than the `terraform-aws-oidc-github` module currently exposes. You can filter for specific environments, for Pull Requests only, for specific branches, or specific tags (full details [here](https://docs.github.com/en/enterprise-cloud@latest/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#example-subject-claims)). We're going to contribute an example with all the knobs and levers soon!
 
 ### tfstate-backend module
 
