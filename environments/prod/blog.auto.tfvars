@@ -1,4 +1,4 @@
-bastion_enabled = false
+bastion_enabled = true
 bastion_private_subnet_ids = [
   "subnet-095c3a86def7689cd",
   "subnet-094f9efdc8cb28742",
