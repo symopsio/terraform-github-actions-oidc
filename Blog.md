@@ -16,13 +16,13 @@ We're going to get this whole setup configured without ever putting an AWS Acces
 
 ### GitHub Actions Permissions
 
-Using GitHub OIDC means you'll have to do some permissions configuration in your GitHub Action configs. If your organization is set up to allow [permissive default access](https://docs.github.com/en/github-ae@latest/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token), then you may not have encountered the GitHub permissions configuration requirements before. GitHub OIDC requires `write` for the `id-token` scope, which is not in the default access scopes. The tricky thing is that once you configure any permissions, all the ones you don't specify are set to no access. So you have to configure all the ones you need. Since our workflow [configs](.github/workflows) are going to create and comment on pull requests, we've added the `contents`, `issues`, and `pull-requests` scopes in addition to the `id-token` scope.
+Using GitHub OIDC means you'll have to do some permissions configuration in your GitHub Action configs. If your organization is set up to allow [permissive default access](https://docs.github.com/en/github-ae@latest/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token), then you may not have encountered the GitHub permissions configuration requirements before. GitHub OIDC requires `write` for the `id-token` scope, which is not in the default access scopes. The tricky thing is that once you configure any permissions, all the ones you don't specify are set to no access. So you have to configure all the ones you need. Since our workflow [configs](.github/workflows) are going to create and comment on Pull Requests, we've added the `contents`, `issues`, and `pull-requests` scopes in addition to the `id-token` scope.
 
 ### terraform-aws-oidc-github module
 
 Getting your OIDC stuff set up is pretty simple, but rather than starting from scratch there's a nice starter module by [@unfunco](https://github.com/unfunco/terraform-aws-oidc-github) that we're going to use. The module lets you configure the name of the GitHub org and the list of GitHub repositories that your AWS Role should trust.
 
-Note that you can actually lock down the trust relationship to more fine grained conditions than the `terraform-aws-oidc-github` module currently exposes. You can filter for specific environments, for pull requests only, for specific branches, or specific tags (full details [here](https://docs.github.com/en/enterprise-cloud@latest/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#example-subject-claims). We're going to contribute an example with all the knobs and levers soon!
+Note that you can actually lock down the trust relationship to more fine grained conditions than the `terraform-aws-oidc-github` module currently exposes. You can filter for specific environments, for Pull Requests only, for specific branches, or specific tags (full details [here](https://docs.github.com/en/enterprise-cloud@latest/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#example-subject-claims). We're going to contribute an example with all the knobs and levers soon!
 
 ### tfstate-backend module
 
@@ -30,7 +30,7 @@ We're not just going to avoid setting AWS Access Keys for our pipeline, we're al
 
 ### setup-terraform Action
 
-We use HashiCorp's [`setup-terraform`](https://github.com/hashicorp/setup-terraform) module in our workflows to actually do the provisioning. The `README` provides a nice example of how to comment on your pull requests with a well formatted Terraform plan.
+We use HashiCorp's [`setup-terraform`](https://github.com/hashicorp/setup-terraform) module in our workflows to actually do the provisioning. The `README` provides a nice example of how to comment on your Pull Requests with a well formatted Terraform plan.
 
 ## Step 1: Provision the IAM Roles that our workflows will use
 
@@ -46,7 +46,9 @@ We split the IAM Permissions into two policies - a `bootstrap` policy that you o
 
 Now that we've got a bootstrap role provisioned, we can set the `AWS_ROLE_ARN` in the [`terraform-bootstrap`](.github/workflows/terraform-bootstrap.yaml) workflow. `terraform-bootstrap` provisions the `tfstate-backend` module where we'll store our Terraform state, and creates a Pull Request that adds backend configuration to our repo. `terraform-bootsrap` is set up with the [`workflow_dispatch`](https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/) trigger - this means we can manually trigger the workflow from the UI rather than it being triggered by Git activity.
 
-Manually running the workflow will provision your state and create a pull request that looks like the following:
+Manually running the workflow will provision your state and create a Pull Request like [this one](https://github.com/symopsio/terraform-github-actions-oidc/pull/2):
+
+![Bootstrap Pull Request](docs/BootstrapPullRequest.png)
 
 ## Step 3: Provision Our Infrastructure
 
@@ -54,7 +56,17 @@ Once we've got state management configured, we configure the `AWS_ROLE_ARN` in t
 
 ## Testing it out
 
-Once you've updated your GitHub Action workflow configs and pushed to `main`, you should have a VPC with an EC2 instance that you can access via AWS Session Manager. Review your GitHub Action output to find the ID of the instance, and then run `aws ssm start-session --target <instance-id>` to connect.
+Update your [`terraform.tfvars`](environments/prod/terraform.tfvars) to set `bastion_enabled` to `true`, and to configure the VPC and Private Subnet IDs to use for your instance.
+
+Now push these changes to branch called `enable-bastion`. This will create a Pull Request [like this one](https://github.com/symopsio/terraform-github-actions-oidc/pull/3) with the plan. Then merge the PR and your bastion [will get provisioned!](https://github.com/symopsio/terraform-github-actions-oidc/actions/runs/2167608351)
+
+![Bastion Pull Request](docs/BastionPullRequest.png)
+
+Review the `main` workflow output to find the ID of the instance, and then run `aws ssm start-session --target <instance-id>` to connect.
+
+![SSM Session](docs/SSMSession.png)
+
+### Port forwarding
 
 If you configure the `bastion_tunnel_ports` variable, you can use the [`tunnel.sh`](modules/ssm-bastion/tunnel.sh) script to port forward resources to localhost.
 
