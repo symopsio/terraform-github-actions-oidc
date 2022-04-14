@@ -5,7 +5,7 @@ on: workflow_dispatch
 env:
   AWS_REGION: us-east-1
   # The role we set up in our bootstrap Terraform environment
-  AWS_ROLE_ARN: arn:aws:iam::012345678901:role/sym/SymGitHubActionsAccess
+  AWS_ROLE_ARN: arn:aws:iam::456302726331:role/sym-github-action
 
 # Because we need the id-token permission, we have to specify all the
 # permissions that we need.

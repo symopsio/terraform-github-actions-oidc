@@ -36,12 +36,9 @@ We use HashiCorp's [`setup-terraform`](https://github.com/hashicorp/setup-terraf
 
 Setting up GitHub Actions so that we can use IAM Roles instead of access keys is awesome! But now we have to actually give the roles some permissions so that they can actually manage our infrastructure. We've created a bootstrap configuration in our example repo that sets up an IAM that can bootstrap state and provision our EC2 instance.
 
-This is the only step we'll have to do from outside of GitHub Actions, since we need these roles to exist in order for your workflows to run. We'll take the role outputs from our bootstrap configuration and use those to configure our workflows in the next step.
+This is the only step we'll have to do from outside of GitHub Actions, since we need these roles to exist in order for your workflows to run. We'll take the role outputs from our bootstrap configuration and use those to configure our workflows in the next step. Run a `terraform apply` from the `environments/bootstrap` directory to create the role:
 
-```
-$ cd environments/bootstrap
-$ terraform apply
-```
+![Bootstrap Role](docs/BootstrapRole.png)
 
 We split the IAM Permissions into two policies - a `bootstrap` policy that you only need during state management bootstrap and a `main` policy that you need for ongoing iteration on your infrastructure. In further iterations of this setup, your org could maintain a general purpose bootstrap role to let teams create state management resources.
 
