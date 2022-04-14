@@ -1,0 +1,23 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:CreateBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${namespace}-tfstate-${aws_account_id}"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:CreateTable",
+                "dynamodb:TagResource",
+                "dynamodb:UpdateContinuousBackups"
+            ],
+            "Resource": "arn:aws:dynamodb:us-east-1:${aws_account_id}:table/${namespace}-tfstate-${aws_account_id}-lock"
+        }
+    ]
+}

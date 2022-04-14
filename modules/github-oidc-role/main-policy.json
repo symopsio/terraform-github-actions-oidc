@@ -1,0 +1,73 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:Get*",
+                "s3:List*",
+                "s3:Put*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${namespace}-tfstate-${aws_account_id}",
+                "arn:aws:s3:::${namespace}-tfstate-${aws_account_id}/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DeleteItem",
+                "dynamodb:Describe*",
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:List*"
+            ],
+            "Resource": "arn:aws:dynamodb:us-east-1:${aws_account_id}:table/${namespace}-tfstate-${aws_account_id}-lock"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateSecurityGroup",
+                "ec2:CreateTags",
+                "ec2:Describe*",
+                "ec2:RunInstances",
+                "iam:CreateInstanceProfile",
+                "iam:CreatePolicy",
+                "iam:CreateRole",
+                "iam:Get*",
+                "iam:List*",
+                "iam:PassRole"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:AuthorizeSecurityGroupEgress",
+                "ec2:AuthorizeSecurityGroupIngress",
+                "ec2:CreateVolume",
+                "ec2:DeleteSecurityGroup",
+                "ec2:MonitorInstances",
+                "ec2:RevokeSecurityGroupEgress",
+                "ec2:RevokeSecurityGroupIngress",
+                "ec2:StopInstances",
+                "ec2:TerminateInstances",
+                "iam:AttachRolePolicy",
+                "iam:AddRoleToInstanceProfile",
+                "iam:DeleteInstanceProfile",
+                "iam:DeletePolicy",
+                "iam:DeleteRole",
+                "iam:DeleteRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:RemoveRoleFromInstanceProfile",
+                "iam:TagInstanceProfile",
+                "iam:TagRole",
+                "iam:PutRolePolicy"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {"aws:ResourceTag/${tag_key}": "${tag_value}"}
+            }
+        }
+    ]
+}
